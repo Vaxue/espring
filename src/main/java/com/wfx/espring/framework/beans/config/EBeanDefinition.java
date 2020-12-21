@@ -9,9 +9,12 @@ import lombok.Data;
  * @CreateTime: 2020-12-14-01:24:26
  * @Description: 用来存储配置文件中的信息
  **/
+
 @Data
 public class EBeanDefinition {
     private String beanClassName;
     private boolean lazyIniti = false;
     private String factoryBeanName;
+    private boolean isCreated = false;
+    private boolean isSingleton = true;
 }

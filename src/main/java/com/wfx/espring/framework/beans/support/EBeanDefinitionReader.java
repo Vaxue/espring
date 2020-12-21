@@ -2,6 +2,7 @@ package com.wfx.espring.framework.beans.support;
 
 import com.wfx.espring.framework.beans.config.EBeanDefinition;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -18,6 +19,7 @@ import java.util.Properties;
  * @Description: 描述
  **/
 @Data
+@NoArgsConstructor
 public class EBeanDefinitionReader {
 
     private List<String> registryBeanClasses = new ArrayList<>();
@@ -48,7 +50,7 @@ public class EBeanDefinitionReader {
 
    private void doScanner(String scanPackage) {
        //转换为文件路径,实际上就是把.替换为/就OK了
-       URL url = this.getClass().getClassLoader().getResource(scanPackage.replaceAll("\\.","/"));
+       URL url = this.getClass().getResource("/"+scanPackage.replaceAll("\\.","/"));
        File classPath = new File(url.getFile());
        for (File file : classPath.listFiles()) {
            if (file.isDirectory()) {
@@ -60,6 +62,10 @@ public class EBeanDefinitionReader {
            }
        }
    }
+
+    public Properties getConfig(){
+        return this.config;
+    }
 
     /**把配置文件中扫描到的所有的配置信息转换为EBeanDefinition对象，以便于之后IOC操作方便*/
     public List<EBeanDefinition> loadBeanDefinitions(){
@@ -75,6 +81,7 @@ public class EBeanDefinitionReader {
                 }
                 //3.benaName默认为类名首字母小写
                 result.add(doCreateBeanDefinition(toLowerFirstCase(beanClass.getSimpleName()), beanClass.getName()));
+                //result.add(doCreateBeanDefinition(beanClass.getName(), beanClass.getName()));
                 //4.该类实现的接口也放到容器中
                 Class<?>[] interfaces = beanClass.getInterfaces();
                 for (Class<?> i : interfaces) {
@@ -88,7 +95,7 @@ public class EBeanDefinitionReader {
         return result;
     }
 
-    private EBeanDefinition doCreateBeanDefinition(String beanClassName, String factoryBeanName) {
+    private EBeanDefinition doCreateBeanDefinition(String factoryBeanName, String beanClassName) {
         EBeanDefinition beanDefinition = new EBeanDefinition();
         beanDefinition.setBeanClassName(beanClassName);
         beanDefinition.setFactoryBeanName(factoryBeanName);
